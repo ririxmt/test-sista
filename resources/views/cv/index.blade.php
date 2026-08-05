@@ -63,9 +63,13 @@
             <h1>Daftar CV Tersimpan</h1>
             <p class="muted">Data final yang sudah masuk ke database.</p>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
             <a href="{{ route('sista-export.index') }}" class="btn btn-outline">Export ke SISTA</a>
             <a href="{{ route('applicants.upload.form') }}" class="btn btn-outline">+ Upload CV</a>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                @csrf
+                <button type="submit" class="btn btn-outline" style="cursor:pointer;color:#dc2626;border-color:#fecaca;">Logout</button>
+            </form>
         </div>
     </div>
 

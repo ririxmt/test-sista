@@ -74,7 +74,13 @@
             <h1>Upload CV</h1>
             <p class="muted">File akan diproses AI dan hasil ekstraksinya disimpan sebagai data staging (belum masuk ke profil final).</p>
         </div>
-        <a href="{{ route('cv.index') }}" class="btn-outline">Lihat Saved CV List &rarr;</a>
+        <div style="display:flex;gap:8px;align-items:center;">
+            <a href="{{ route('cv.index') }}" class="btn-outline">Lihat Saved CV List &rarr;</a>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                @csrf
+                <button type="submit" class="btn-outline" style="cursor:pointer;color:#dc2626;border-color:#fecaca;">Logout</button>
+            </form>
+        </div>
     </div>
 
     @if (session('success'))
