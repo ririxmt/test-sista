@@ -136,6 +136,17 @@ class CvController extends Controller
         foreach ($cv->sertifikasiProfesi()->pluck('file_sertifikat')->filter() as $path) {
             $this->lampiranService->deleteFile($path);
         }
+
+        // Bersihkan staging terkait agar tidak jadi "hantu" di daftar export.
+        // (staging menunjuk ke cv ini; kalau cv dihapus, staging-nya ikut dibuang + file uploadnya)
+        $stagings = CvStaging::where('cv_id', $cv->id)->get();
+        foreach ($stagings as $s) {
+            if ($s->source_file_path) {
+                Storage::disk('local')->delete($s->source_file_path);
+            }
+        }
+        CvStaging::where('cv_id', $cv->id)->delete();
+
         $cv->delete();                            // baris DB cascade otomatis
 
         return redirect()->route('cv.index')
