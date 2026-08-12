@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            max-width: 900px;
+            max-width: 1140px;
             margin: 40px auto;
             padding: 0 20px;
             background: #f8fafc;
@@ -20,16 +20,22 @@
             background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46;
             padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
         }
-        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 0; }
+        /* overflow-x jadi pengaman: di layar sempit tabel digeser di dalam kartu,
+           bukan meluber keluar batas kartu seperti sebelumnya. */
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 0; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 12px 20px; font-size: 0.92rem; }
+        th, td { text-align: left; padding: 12px 16px; font-size: 0.92rem; vertical-align: middle; }
+        /* Kolom tanggal & aksi tidak boleh patah baris; 'width:1%' membuat kolom
+           aksi menyusut pas selebar isinya sehingga sisa ruang jatuh ke kolom teks. */
+        .nowrap { white-space: nowrap; }
+        th:last-child, td:last-child { width: 1%; white-space: nowrap; text-align: right; }
         th { color: #64748b; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid #e2e8f0; }
         tbody tr { border-bottom: 1px solid #f1f5f9; }
         tbody tr:last-child { border-bottom: none; }
         tbody tr:hover { background: #f9fafb; }
         .btn {
             display: inline-block; background: #2563eb; color: #fff; text-decoration: none;
-            padding: 6px 14px; border-radius: 6px; font-size: 0.85rem;
+            padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; white-space: nowrap;
         }
         .btn:hover { background: #1d4ed8; }
         .btn-outline {
@@ -41,7 +47,7 @@
         .btn-edit:hover { background: #f1f5f9; }
         .btn-danger { background: #fff; color: #dc2626; border: 1px solid #fecaca; cursor: pointer; font: inherit; }
         .btn-danger:hover { background: #fef2f2; }
-        .row-actions { display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
+        .row-actions { display: flex; gap: 6px; justify-content: flex-end; align-items: center; flex-wrap: nowrap; }
         .row-actions form { margin: 0; }
         .empty { padding: 40px 20px; text-align: center; color: #94a3b8; }
         .pager { display: flex; align-items: center; gap: 6px; margin-top: 18px; justify-content: flex-end; }
@@ -111,7 +117,7 @@
                     <th>Nama</th>
                     <th>Gelar Belakang</th>
                     <th>Email</th>
-                    <th>Tanggal Simpan</th>
+                    <th class="nowrap">Tanggal Simpan</th>
                     <th></th>
                 </tr>
             </thead>
@@ -122,7 +128,7 @@
                         <td>{{ $cv->nama ?: '—' }}</td>
                         <td>{{ $cv->gelar_belakang ?: '—' }}</td>
                         <td>{{ $cv->user?->email ?: '—' }}</td>
-                        <td>{{ $cv->updated_at?->format('d M Y H:i') }}</td>
+                        <td class="nowrap">{{ $cv->updated_at?->format('d M Y H:i') }}</td>
                         <td>
                             <div class="row-actions">
                                 <a href="{{ route('cv.show', $cv) }}" class="btn btn-sm">Detail</a>
