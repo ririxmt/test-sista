@@ -53,7 +53,13 @@
     <h1>
         {{ $cv->gelar_depan ? $cv->gelar_depan . ' ' : '' }}{{ $cv->nama ?: 'Tanpa Nama' }}{{ $cv->gelar_belakang ? ', ' . $cv->gelar_belakang : '' }}
     </h1>
-    <p class="muted">{{ $cv->posisi ?: 'Tenaga Ahli' }} &middot; {{ $cv->perusahaan ?: 'PT LAPI ITB' }} &middot; Tersimpan {{ $cv->updated_at?->format('d M Y H:i') }}</p>
+    {{-- Posisi/perusahaan yang kosong dilewati saja, jangan diisi nilai contoh --}}
+    {{-- karena di halaman ini akan terbaca seolah-olah data asli pemilik CV. --}}
+    @php
+        $meta = array_filter([$cv->posisi, $cv->perusahaan]);
+        $meta[] = 'Tersimpan ' . $cv->updated_at?->format('d M Y H:i');
+    @endphp
+    <p class="muted">{!! implode(' &middot; ', array_map('e', $meta)) !!}</p>
     </div>
         <a href="{{ route('cv.edit', $cv) }}" class="btn">Edit CV</a>
     </div>

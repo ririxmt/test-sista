@@ -18,10 +18,24 @@ class CvController extends Controller
     ) {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $cvs = Cv::with('user')->orderByDesc('updated_at')->paginate(15);
-        return view('cv.index', compact('cvs'));
+        $q = trim((string) $request->query('q', ''));
+
+        // Lolos karakter wildcard LIKE ('%' dan '_') supaya diperlakukan sebagai
+        // teks biasa, bukan pola — mencari "_" jangan sampai cocok ke semua baris.
+        $term = '%' . addcslashes($q, '%_\\') . '%';
+
+        $cvs = Cv::with('user')
+            ->when($q !== '', fn ($query) => $query->where(function ($sub) use ($term) {
+                $sub->where('nama', 'like', $term)
+                    ->orWhereHas('user', fn ($u) => $u->where('email', 'like', $term));
+            }))
+            ->orderByDesc('updated_at')
+            ->paginate(15)
+            ->withQueryString(); // pertahankan ?q= saat pindah halaman
+
+        return view('cv.index', compact('cvs', 'q'));
     }
 
     public function show(Cv $cv)

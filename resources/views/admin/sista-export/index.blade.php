@@ -75,13 +75,23 @@
     <div class="card" style="padding:8px 0;">
         <table>
             <thead>
-                <tr><th>Nama</th><th>Email</th><th>Status</th></tr>
+                <tr><th>Nama</th><th>Email (sesuai isi export)</th><th>Status</th></tr>
             </thead>
             <tbody>
                 @forelse ($rows as $r)
                     <tr>
                         <td>{{ $r->parsed_name ?: '—' }}</td>
-                        <td>{{ $r->parsed_email ?: '—' }}</td>
+                        @php
+                            // Tampilkan email yang benar-benar akan ditulis ke users.csv.
+                            $email = $r->parsed_email ?: $r->user?->email;
+                            $isDummy = ! $r->parsed_email && str_ends_with((string) $email, '@dummy.sista');
+                        @endphp
+                        <td>
+                            {{ $email ?: '—' }}
+                            @if ($isDummy)
+                                <span class="tag tag-changed">dummy</span>
+                            @endif
+                        </td>
                         <td>
                             @if ($r->sista_export_status === 'changed_after_export')
                                 <span class="tag tag-changed">berubah setelah export</span>

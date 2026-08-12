@@ -94,7 +94,7 @@
     <div class="card">
         <form action="{{ route('applicants.upload') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <label for="resume">Pilih file CV (PDF/JPG/PNG, maks 4MB)</label>
+            <label for="resume">Pilih file CV (PDF/JPG/PNG, maks 500MB)</label>
             <input type="file" name="resume" id="resume" accept=".pdf,.jpg,.jpeg,.png" required>
             <button type="submit">Upload & Proses</button>
         </form>

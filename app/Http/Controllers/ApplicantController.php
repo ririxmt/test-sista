@@ -32,7 +32,10 @@ class ApplicantController extends Controller
         set_time_limit(300);
 
         $request->validate([
-            'resume' => 'required|mimes:pdf,jpeg,png,jpg|max:51200',
+            // max dalam KB: 512000 KB = 500 MB. Sengaja dibuat lebih rendah dari
+            // upload_max_filesize PHP (512M) supaya pesan validasi yang ramah muncul
+            // duluan, bukan pesan teknis "failed to upload" dari PHP.
+            'resume' => 'required|mimes:pdf,jpeg,png,jpg|max:512000',
         ]);
 
         $file = $request->file('resume');

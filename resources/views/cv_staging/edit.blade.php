@@ -136,7 +136,7 @@
                 </div>
                 <div>
                     <label>Perusahaan / Institusi</label>
-                    <input type="text" name="perusahaan" value="{{ old('perusahaan', $d['perusahaan'] ?? '') }}" placeholder="ITB / PT LAPI ITB">
+                    <input type="text" name="perusahaan" value="{{ old('perusahaan', $d['perusahaan'] ?? '') }}">
                 </div>
                 <div>
                     <label>Domisili Kota</label>

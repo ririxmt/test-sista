@@ -54,6 +54,17 @@
         .pager .current { background: #2563eb; color: #fff; border-color: #2563eb; }
         .pager .disabled { color: #cbd5e1; background: #f8fafc; cursor: default; }
         .pager .info { border: none; background: none; color: #64748b; margin-right: auto; padding-left: 0; }
+        .searchbar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+        .searchbar input[type="search"] {
+            flex: 1; padding: 9px 12px; font-size: 0.9rem; font-family: inherit; color: #1e293b;
+            border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;
+        }
+        .searchbar input[type="search"]:focus {
+            outline: none; border-color: #93c5fd; box-shadow: 0 0 0 3px #dbeafe;
+        }
+        .searchbar button { font: inherit; cursor: pointer; }
+        .search-info { color: #64748b; font-size: 0.88rem; margin: -6px 0 14px; }
+        .search-info strong { color: #1e293b; }
     </style>
 </head>
 <body>
@@ -75,6 +86,21 @@
 
     @if (session('success'))
         <div class="alert-success">{{ session('success') }}</div>
+    @endif
+
+    <form method="GET" action="{{ route('cv.index') }}" class="searchbar">
+        <input type="search" name="q" value="{{ $q }}"
+               placeholder="Cari berdasarkan nama atau email…" aria-label="Cari CV">
+        <button type="submit" class="btn btn-sm">Cari</button>
+        @if ($q !== '')
+            <a href="{{ route('cv.index') }}" class="btn btn-sm btn-edit">Reset</a>
+        @endif
+    </form>
+
+    @if ($q !== '')
+        <p class="search-info">
+            {{ $cvs->total() }} hasil untuk <strong>"{{ $q }}"</strong>
+        </p>
     @endif
 
     <div class="card">
@@ -112,7 +138,13 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="empty">Belum ada CV tersimpan. Silakan upload CV terlebih dahulu.</td>
+                        <td colspan="6" class="empty">
+                            @if ($q !== '')
+                                Tidak ada CV yang cocok dengan "{{ $q }}".
+                            @else
+                                Belum ada CV tersimpan. Silakan upload CV terlebih dahulu.
+                            @endif
+                        </td>
                     </tr>
                 @endforelse
             </tbody>

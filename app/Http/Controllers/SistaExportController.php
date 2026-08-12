@@ -30,8 +30,12 @@ class SistaExportController extends Controller
     {
         $count = $this->candidateQuery()->count();
 
-        $rows = $this->candidateQuery()->paginate(50, [
-            'id', 'cv_id', 'parsed_name', 'parsed_email', 'sista_export_status',
+        // parsed_email sering kosong (CV tanpa email pribadi). Yang benar-benar ikut
+        // ke ZIP adalah users.email — termasuk email dummy @dummy.sista yang dibuat
+        // otomatis saat approve. Muat relasi user supaya preview = isi export.
+        // user_id wajib ikut di-select, kalau tidak relasinya tak bisa dimuat.
+        $rows = $this->candidateQuery()->with('user:id,email')->paginate(50, [
+            'id', 'cv_id', 'user_id', 'parsed_name', 'parsed_email', 'sista_export_status',
         ]);
 
         $batches = SistaExportBatch::orderByDesc('id')->limit(10)->get();
