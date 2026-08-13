@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Cv;
 use App\Models\CvStaging;
 use App\Models\SertifikasiProfesi;
+use App\Models\User;
 use App\Services\CvDistributionService;
 use App\Services\CvLampiranService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class CvController extends Controller
 {
@@ -65,6 +67,7 @@ class CvController extends Controller
             'cvKeahlian',
             'bahasa',
             'lampiran',
+            'user',
         ]);
 
         return view('cv.edit', compact('cv'));
@@ -72,8 +75,19 @@ class CvController extends Controller
 
     public function update(Request $request, Cv $cv)
     {
+        // Email tersimpan di akun user (tabel `cv` tidak punya kolom email).
+        // Aturan email hanya dipasang kalau nilainya benar-benar diubah, supaya
+        // email lama hasil parsing yang berantakan (mis. dua alamat sekaligus)
+        // tidak memblokir penyimpanan field-field lain.
+        $emailBaru   = trim((string) $request->input('email'));
+        $emailDiubah = $cv->user && strcasecmp($emailBaru, (string) $cv->user->email) !== 0;
+
         $request->validate([
             'nama'                 => ['nullable', 'string', 'max:255'],
+            'email'                => $emailDiubah ? [
+                'nullable', 'string', 'email', 'max:255',
+                Rule::unique(User::class, 'email')->ignore($cv->user_id),
+            ] : [],
             'lampiran.ktp'         => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:51200'],
             'lampiran.npwp'        => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:51200'],
             'lampiran.bukti_pajak' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:51200'],
@@ -119,6 +133,15 @@ class CvController extends Controller
         ];
 
         $this->distributionService->applyData($cv, $data);
+
+        // Simpan email ke akun talent yang terhubung.
+        // Dikosongkan = biarkan email lama (akun wajib punya email).
+        if ($emailDiubah && $emailBaru !== '') {
+            $cv->user->forceFill([
+                'email'             => $emailBaru,
+                'email_verified_at' => null, // alamat baru belum terverifikasi
+            ])->save();
+        }
 
         // Lampiran single (KTP/NPWP/Bukti Pajak/Foto): file baru mengganti yang lama.
         $this->lampiranService->sync(

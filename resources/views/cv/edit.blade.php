@@ -174,6 +174,13 @@
                     <label>Domisili Negara</label>
                     <input type="text" name="domisili_negara" value="{{ old('domisili_negara', $d['domisili_negara'] ?: 'Indonesia') }}">
                 </div>
+                <div>
+                    <label>Email (akun)</label>
+                    <input type="email" name="email" value="{{ old('email', $cv->user?->email) }}" placeholder="nama@contoh.com">
+                    <p class="muted" style="margin:4px 0 0;font-size:0.78rem;">
+                        Email akun talent — ini yang ikut terkirim ke SISTA saat export.
+                    </p>
+                </div>
             </div>
 
             <label>Ringkasan Profil</label>
